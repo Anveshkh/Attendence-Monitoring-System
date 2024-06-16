@@ -5,18 +5,16 @@ import os
 from datetime import datetime
 # from PIL import ImageGrab
  
-path = 'D:/python/FaceRecogntion/FACE-RECOGNITION-AND-ATTENDENCE/ImagesAttendance'
+path = 'C:\\Users\\Hp\\OneDrive\\Desktop\\Python Project\\FACE RECOGNITION\\FACR-RECOGNITION-AND-ATTENDENCE\\ImagesAttendance'
 images = []
 classNames = []
 myList = os.listdir(path)
-# print(myList)
-
+print(myList)
 for cl in myList:
     curImg = cv2.imread(f'{path}/{cl}')
     images.append(curImg)
     classNames.append(os.path.splitext(cl)[0])
-    # print(os.path.splitext(cl))
-# print(classNames)
+print(classNames)
  
 def findEncodings(images):
     encodeList = []
@@ -32,7 +30,6 @@ def markAttendance(name):
         nameList = []
         for line in myDataList:
             entry = line.split(',')
-            print(f"Entry -> {entry}")
             nameList.append(entry[0])
         if name not in nameList:
             now = datetime.now()
@@ -56,16 +53,13 @@ while True:
     imgS = cv2.resize(img,(0,0),None,0.25,0.25)
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
  
-    facesCurFrame = face_recognition.face_locations(imgS)   # current face location
-    encodesCurFrame = face_recognition.face_encodings(imgS,facesCurFrame)   # current face encoding
+    facesCurFrame = face_recognition.face_locations(imgS)
+    encodesCurFrame = face_recognition.face_encodings(imgS,facesCurFrame)
  
     for encodeFace,faceLoc in zip(encodesCurFrame,facesCurFrame):
-        # Compare current face encodings with the encodings of images present in our database
         matches = face_recognition.compare_faces(encodeListKnown,encodeFace)
-
-        # Find the distance of current face from all the faces in the database
         faceDis = face_recognition.face_distance(encodeListKnown,encodeFace)
-        print(faceDis)
+        #print(faceDis)
         matchIndex = np.argmin(faceDis)
  
         if matches[matchIndex]:
@@ -75,7 +69,7 @@ while True:
             y1, x2, y2, x1 = y1*4,x2*4,y2*4,x1*4
             cv2.rectangle(img,(x1,y1),(x2,y2),(0,255,0),2)
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,255,0),cv2.FILLED)
-            cv2.putText(img,name,(x1+6,y2-3),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
+            cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
             markAttendance(name)
  
     cv2.imshow('Webcam',img)
